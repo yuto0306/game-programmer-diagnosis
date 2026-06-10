@@ -39,14 +39,22 @@ var optimize = 0;
 var analysis = 0;
 
 // ------------------------------
-// JSON読み込み
+// JSON読み込み（例外処理付き）
 // ------------------------------
 fetch("questions.json")
-  .then(res => res.json())
+  .then(res => {
+    if (!res.ok) throw new Error("JSONファイルの読み込みに失敗しました");
+    return res.json();
+  })
   .then(data => {
+    if (!Array.isArray(data)) throw new Error("JSON形式が不正です");
     questions = data;
     loadingScreen.style.display = "none";
     startScreen.style.display = "block";
+  })
+  .catch(err => {
+    console.error("読み込みエラー:", err);
+    alert("データの読み込みに失敗しました。ファイルを確認してください。");
   });
 
 // ------------------------------
@@ -56,7 +64,6 @@ document.getElementById("startBtn").addEventListener("click", function() {
   startScreen.style.display = "none";
   questionScreen.style.display = "block";
 
-  // 質問画面BGM
   bgm.src = "bgm/question.mp3";
   bgm.play();
   updateVolumeIcon();
@@ -65,102 +72,109 @@ document.getElementById("startBtn").addEventListener("click", function() {
 });
 
 // ------------------------------
-// 質問表示
+// 質問表示（例外処理付き）
 // ------------------------------
 function showQuestion() {
-  var q = questions[index];
-  questionText.textContent = q.text;
+  try {
+    var q = questions[index];
+    if (!q || !q.answers) throw new Error("質問データが不正です");
 
-  answerButtons.innerHTML = "";
+    questionText.textContent = q.text;
+    answerButtons.innerHTML = "";
 
-  q.answers.forEach((ans, i) => {
-    var btn = document.createElement("button");
-    btn.textContent = ans.text;
-    btn.addEventListener("click", () => selectAnswer(i));
-    answerButtons.appendChild(btn);
-  });
+    q.answers.forEach((ans, i) => {
+      var btn = document.createElement("button");
+      btn.textContent = ans.text;
+      btn.addEventListener("click", () => selectAnswer(i));
+      answerButtons.appendChild(btn);
+    });
 
-  progress.textContent = (index + 1) + " / " + questions.length;
+progress.textContent = (index + 1) + " / " + questions.length;
+
+// ▼ スマホで画面がズレないように固定
+window.scrollTo(0, 0);
+
+  } catch (err) {
+    console.error("質問表示エラー:", err);
+    alert("質問データに問題があります。JSONを確認してください。");
+  }
 }
 
 // ------------------------------
-// 回答選択（ゲーム性MAX版）
+// 回答選択（例外処理付き）
 // ------------------------------
-
-// コンボ用
 let lastType = null;
 let comboCount = 0;
 
 function selectAnswer(i) {
-  var a = questions[index].answers[i];
+  try {
+    var a = questions[index].answers[i];
+    if (!a) throw new Error("回答データが不正です");
 
-  // ▼ どのタイプにポイントが入ったか判定
-  let currentType = null;
-  if (a.front > 0) currentType = "front";
-  if (a.backend > 0) currentType = "backend";
-  if (a.data > 0) currentType = "data";
-  if (a.infra > 0) currentType = "infra";
+    let currentType = null;
+    if (a.front > 0) currentType = "front";
+    if (a.backend > 0) currentType = "backend";
+    if (a.data > 0) currentType = "data";
+    if (a.infra > 0) currentType = "infra";
 
-  // ▼ 基本ポイント
-  front += a.front;
-  backend += a.backend;
-  data += a.data;
-  infra += a.infra;
+    front += a.front;
+    backend += a.backend;
+    data += a.data;
+    infra += a.infra;
 
-  // ▼ タグポイント
-  if (a.reflex) reflex += a.reflex;
-  if (a.strategy) strategy += a.strategy;
-  if (a.explore) explore += a.explore;
-  if (a.optimize) optimize += a.optimize;
-  if (a.analysis) analysis += a.analysis;
+    if (a.reflex) reflex += a.reflex;
+    if (a.strategy) strategy += a.strategy;
+    if (a.explore) explore += a.explore;
+    if (a.optimize) optimize += a.optimize;
+    if (a.analysis) analysis += a.analysis;
 
-  // ▼ ランダムボーナス（0〜2点）
-  const randomBonus = Math.floor(Math.random() * 3);
-  front += randomBonus;
-  backend += randomBonus;
-  data += randomBonus;
-  infra += randomBonus;
+    const randomBonus = Math.floor(Math.random() * 3);
+    front += randomBonus;
+    backend += randomBonus;
+    data += randomBonus;
+    infra += randomBonus;
 
-  // ▼ クリティカル（10%で +10点）
-  if (Math.random() < 0.10) {
-    front += 10;
-    backend += 10;
-    data += 10;
-    infra += 10;
-    console.log("🔥 クリティカルヒット！ +10点");
-  }
+    if (Math.random() < 0.10) {
+      front += 10;
+      backend += 10;
+      data += 10;
+      infra += 10;
+      console.log("🔥 クリティカルヒット！ +10点");
+    }
 
-  // ▼ ミス（5%で -5点）
-  if (Math.random() < 0.05) {
-    front -= 5;
-    backend -= 5;
-    data -= 5;
-    infra -= 5;
-    console.log("💀 ミス発生！ -5点");
-  }
+    if (Math.random() < 0.05) {
+      front -= 5;
+      backend -= 5;
+      data -= 5;
+      infra -= 5;
+      console.log("💀 ミス発生！ -5点");
+    }
 
-  // ▼ コンボ（同じタイプ連続で加算）
-  if (currentType === lastType) {
-    comboCount++;
-    const comboBonus = comboCount;
-    front += comboBonus;
-    backend += comboBonus;
-    data += comboBonus;
-    infra += comboBonus;
-    console.log(`⚡ コンボ ${comboCount}！ +${comboBonus}点`);
-  } else {
-    comboCount = 0;
-  }
+    if (currentType === lastType) {
+      comboCount++;
+      const comboBonus = comboCount;
+      front += comboBonus;
+      backend += comboBonus;
+      data += comboBonus;
+      infra += comboBonus;
+      console.log(`⚡ コンボ ${comboCount}！ +${comboBonus}点`);
+    } else {
+      comboCount = 0;
+    }
 
-  lastType = currentType;
+    lastType = currentType;
 
-  // ▼ 次へ
-  index++;
+    index++;
 
-  if (index < questions.length) {
-    showQuestion();
-  } else {
-    showResult();
+    if (index < questions.length) {
+      showQuestion();
+    } else {
+      showResult();
+    }
+
+  } catch (err) {
+    console.error("回答処理エラー:", err);
+    alert("回答データに問題があります。JSONを確認してください。");
   }
 }
 
@@ -188,54 +202,15 @@ function judgeResult(scores) {
 }
 
 // ------------------------------
-// 詳細テキスト
-// ------------------------------
-function getDetailText(type) {
-  switch (type) {
-    case "反射・直感タイプ": 
-      return "瞬時の判断や操作が得意なタイプ。アクションや反射神経を使うゲームで力を発揮する！";
-    case "戦略・ロジックタイプ": 
-      return "状況を整理し、最適な手を考えるタイプ。RPGやシミュレーションで真価を発揮する！";
-    case "分析・探索タイプ": 
-      return "情報収集やパターン分析が得意。探索・収集・パズル系のゲームが向いている！";
-    case "最適化・安定性タイプ": 
-      return "効率化や環境構築が好き。クラフト・サバイバル・管理系ゲームと相性抜群！";
-    default: 
-      return "タイプ判定に失敗しました。";
-  }
-}
-
-function getProgrammerDetail(type) {
-  switch (type) {
-    case "フロントエンドエンジニア": 
-      return "UI/UX・デザイン・操作性に強いタイプ。見た目と体験を作るのが得意！";
-    case "バックエンドエンジニア": 
-      return "ロジック・仕組み・データ処理が得意。裏側の頭脳を作るタイプ！";
-    case "データエンジニア / データ分析": 
-      return "数字・パターン・分析が得意。情報から価値を生み出すタイプ！";
-    case "インフラ / DevOps エンジニア": 
-      return "安定性・効率化・環境構築が得意。システムを支える縁の下の力持ち！";
-    default: 
-      return "適性判定に失敗しました。";
-  }
-}
-
-// ------------------------------
 // 結果表示（1000点換算）
 // ------------------------------
 function showResult() {
-
-  // 結果画面BGM
   bgm.src = "bgm/result.mp3";
   bgm.play();
   updateVolumeIcon();
 
   const scores = { front, backend, data, infra };
-
-  // ▼ 内部スコア
   const rawScore = front + backend + data + infra;
-
-  // ▼ 1000点にスケール変換（最大1000点）
   const totalScore = Math.min(1000, Math.round((rawScore / 80) * 1000));
 
   const gameType = judgeResult(scores);
@@ -256,7 +231,6 @@ function showResult() {
   showScoreBreakdown(scores);
   showRecommendedLanguages(programmerType);
 
-  // ▼ ランキング保存（1000点換算）
   saveRanking(totalScore, programmerType);
   showRanking();
 }
@@ -350,18 +324,14 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 // ------------------------------
-// ランキング登録（1000点換算版）
+// ランキング登録
 // ------------------------------
 document.getElementById("saveNameBtn").addEventListener("click", function () {
   const name = document.getElementById("playerName").value || "ゲスト";
   localStorage.setItem("playerName", name);
 
-  // ▼ 内部スコア
   const rawScore = front + backend + data + infra;
-
-  // ▼ 1000点にスケール変換
   const totalScore = Math.min(1000, Math.round((rawScore / 80) * 1000));
-
   const programmerType = judgeProgrammerType({ front, backend, data, infra });
 
   saveRanking(totalScore, programmerType);
