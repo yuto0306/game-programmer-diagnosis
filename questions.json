@@ -190,3 +190,13 @@
   },
 
   {
+    "text": "ゲームのプレイスタイルは？",
+    "answers": [
+      { "text": "勢いで楽しむ", "front": 2, "backend": 0, "data": 0, "infra": 0, "reflex": 1 },
+      { "text": "計画的に進める", "front": 0, "backend": 2, "data": 0, "infra": 0, "strategy": 1 },
+      { "text": "情報を集めて進める", "front": 0, "backend": 0, "data": 2, "infra": 0, "analysis": 1 },
+      { "text": "効率よく進める", "front": 0, "backend": 0, "data": 0, "infra": 2, "optimize": 1 }
+    ]
+  }
+]
+
