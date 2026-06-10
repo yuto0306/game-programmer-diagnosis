@@ -1,0 +1,474 @@
+/* 全体のリセット */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Yu Gothic", sans-serif;
+  background: linear-gradient(135deg, #0a0a0a, #1a1a1a, #111);
+  color: #fff;
+  text-align: center;
+  min-height: 100vh;
+  background-size: 300% 300%;
+  animation: bgMove 12s ease infinite;
+}
+
+/* 画面共通（中央寄せ & フェード） */
+.screen {
+  display: none;
+  padding: 40px;
+  animation: fadeIn 0.5s ease;
+}
+
+/* 最初だけ読み込み画面を表示 */
+#loadingScreen {
+  display: block;
+}
+
+/* ▼ カード共通デザイン（質問画面・結果画面で使用） */
+.card {
+  background: #fff;
+  color: #111;
+  width: 85%;
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 40px 30px;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+  text-align: center;
+}
+
+/* ▼ スタート画面（カード化） */
+#startScreen {
+  background: #fff;
+  color: #111;
+  width: 80%;
+  max-width: 600px;
+  margin: 60px auto;
+  padding: 50px 30px;
+  border-radius: 20px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+  animation: startPop 0.6s ease;
+}
+
+#startScreen h1 {
+  font-size: 32px;
+  margin-bottom: 30px;
+  color: #111;
+}
+
+/* ▼ ロゴアニメーション */
+#startLogo {
+  font-size: 40px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  animation: logoGlow 2s infinite alternate ease-in-out;
+}
+
+/* ▼ ボタン共通（光るボタン＋波紋） */
+button {
+  display: block;
+  margin: 15px auto;
+  padding: 14px 28px;
+  font-size: 20px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #3498db, #5dade2);
+  color: white;
+  transition: 0.25s;
+  box-shadow: 0 4px 12px rgba(52,152,219,0.4);
+  position: relative;
+  overflow: hidden;
+}
+
+button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 12px rgba(52,152,219,0.8), 0 6px 18px rgba(52,152,219,0.6);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+button::after {
+  content: "";
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 50%;
+  transform: scale(0);
+  opacity: 0;
+  pointer-events: none;
+}
+
+button:active::after {
+  transform: scale(12);
+  opacity: 0;
+  transition: transform 0.4s ease, opacity 0.6s ease;
+  left: var(--x);
+  top: var(--y);
+}
+
+/* ▼ BGMボタン（色違い） */
+#bgmBtn {
+  background: linear-gradient(135deg, #8e44ad, #a569bd);
+  box-shadow: 0 4px 12px rgba(142,68,173,0.4);
+}
+
+#bgmBtn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(142,68,173,0.6);
+}
+
+/* ▼ 音量スライダー */
+#bgmVolume {
+  width: 70%;
+  margin-top: 10px;
+}
+
+/* ▼ 質問画面（カード化） */
+#questionScreen .card {
+  margin-top: 40px;
+}
+
+#questionText {
+  font-size: 26px;
+  margin-bottom: 25px;
+}
+
+/* 回答ボタン */
+#answerButtons button {
+  width: 80%;
+  max-width: 450px;
+  font-size: 18px;
+}
+
+#answerButtons button:active {
+  transform: scale(0.95);
+}
+
+/* ▼ 結果画面（カード化） */
+#resultScreen .card {
+  margin-top: 40px;
+  animation: slideDown 0.6s ease;
+}
+
+#resultScreen h3 {
+  margin-top: 20px;
+  font-size: 24px;
+}
+
+#resultScreen h2 {
+  animation: titleFade 0.8s ease;
+}
+
+#detailText {
+  margin-top: 20px;
+  line-height: 1.8;
+  font-size: 18px;
+}
+
+/* ▼ 結果アイコン */
+#resultIcon {
+  font-size: 60px;
+  margin-bottom: 10px;
+  animation: popIcon 0.6s ease;
+}
+
+/* ▼ プログレスバー */
+.progress-wrap {
+  width: 100%;
+  height: 10px;
+  background: #333;
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg,#6dd3ff,#6a9cff);
+  transition: width 300ms ease;
+}
+
+/* ▼ 結果の内訳 */
+.score-breakdown {
+  margin-top: 16px;
+  background: #fafafa;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #333;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+/* ▼ 推奨言語 */
+.recommended-lang {
+  margin-top: 12px;
+  font-weight: 600;
+  color: #0b6;
+}
+
+/* ▼ アクションボタン */
+.action-btn {
+  padding: 12px 18px;
+  margin: 10px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #2f80ed, #56a0ff);
+  box-shadow: 0 4px 12px rgba(47,128,237,0.4);
+}
+
+.action-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(47,128,237,0.6);
+}
+
+/* ▼ フェードイン */
+.fade-in {
+  animation: fadeIn 360ms ease both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ▼ 質問切り替えアニメーション */
+.fade-question {
+  animation: fadeQ 0.35s ease;
+}
+
+@keyframes fadeQ {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ▼ 結果ポップアニメーション */
+.result-animate {
+  animation: resultPop 0.5s ease;
+}
+
+@keyframes resultPop {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ▼ ランキングカード */
+.ranking-card {
+  background: #fff;
+  color: #111;
+  width: 85%;
+  max-width: 600px;
+  margin: 30px auto;
+  padding: 20px;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+  text-align: left;
+  font-size: 16px;
+  animation: fadeIn 0.6s ease;
+  border-left: 6px solid #2f80ed;
+}
+
+.ranking-card h3 {
+  margin-top: 0;
+  font-size: 22px;
+  text-align: center;
+}
+
+.ranking-card ol {
+  padding-left: 20px;
+}
+
+.ranking-card li {
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  transition: 0.2s;
+}
+
+.ranking-card li:hover {
+  background: #e8f0ff;
+  transform: translateX(4px);
+}
+
+/* ▼ 名前入力欄 */
+#nameInputArea {
+  margin: 20px auto;
+}
+
+#playerName {
+  width: 70%;
+  padding: 10px;
+  font-size: 18px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background: #f7f7f7;
+}
+
+#saveNameBtn {
+  margin-top: 10px;
+  padding: 10px 20px;
+  font-size: 18px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #27ae60, #2ecc71);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+/* ▼ スマホ最適化 */
+@media (max-width: 600px) {
+  .card {
+    width: 95%;
+    padding: 25px;
+  }
+
+  button {
+    width: 90%;
+    font-size: 18px;
+  }
+
+  #questionText {
+    font-size: 22px;
+  }
+
+  #startScreen h1 {
+    font-size: 26px;
+  }
+}
+
+/* ▼ スクロールバー */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+
+/* ▼ アニメーション各種 */
+@keyframes startPop {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes titleFade {
+  from { opacity: 0; letter-spacing: 2px; }
+  to { opacity: 1; letter-spacing: 0; }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes logoGlow {
+  from { text-shadow: 0 0 10px #3498db; }
+  to { text-shadow: 0 0 25px #5dade2; }
+}
+
+@keyframes bgMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes popIcon {
+  from { transform: scale(0.5); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ▼ ダークモード */
+.dark body {
+  background: #111;
+  color: #fff;
+}
+.dark .card,
+.dark .ranking-card {
+  background: #222;
+  color: #fff;
+}
+.dark button {
+  background: linear-gradient(135deg, #444, #666);
+}
+.dark #playerName {
+  background: #333;
+  color: #fff;
+  border: 1px solid #555;
+}
+.dark #saveNameBtn {
+  background: linear-gradient(135deg, #1e824c, #27ae60);
+}
+
+/* ▼ 音量エリア（中央揃え & 余白調整） */
+#volumeArea {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin: 20px auto 30px;
+}
+
+/* ▼ 音量アイコン（光・アニメ・未来感） */
+#volumeIcon {
+  font-size: 30px;
+  color: #6dd3ff;
+  text-shadow: 0 0 10px rgba(109,211,255,0.8);
+  transition: 0.25s ease;
+  user-select: none;
+}
+
+.volume-animate {
+  animation: volumePulse 0.4s ease;
+}
+
+@keyframes volumePulse {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.25); }
+  60% { transform: scale(0.9); }
+  100% { transform: scale(1); }
+}
+
+/* ▼ 光るスライダー（UIと完全統一） */
+#bgmVolume {
+  width: 60%;
+  height: 8px;
+  -webkit-appearance: none;
+  background: linear-gradient(90deg, #3498db, #6dd3ff, #8e44ad);
+  background-size: 200% 200%;
+  animation: sliderGlow 6s ease infinite;
+  border-radius: 6px;
+  outline: none;
+  cursor: pointer;
+  box-shadow: 0 0 14px rgba(109,211,255,0.5);
+}
+
+/* スライダーの光アニメーション */
+@keyframes sliderGlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* ▼ つまみ（光る丸＋ホバーで浮く） */
+#bgmVolume::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #6dd3ff;
+  border-radius: 50%;
+  box-shadow: 0 0 14px rgba(109,211,255,0.9);
+  cursor: pointer;
+  transition: 0.25s ease;
+}
+
+#bgmVolume::-webkit-slider-thumb:hover {
+  transform: scale(1.25);
+  box-shadow: 0 0 18px rgba(109,211,255,1);
+}

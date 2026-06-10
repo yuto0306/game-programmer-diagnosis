@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ゲーム × プログラマー適性診断</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ▼ ローディング画面（AJAX用） -->
+  <div id="loadingScreen" class="screen">
+    <h2>読み込み中...</h2>
+  </div>
+
+<!-- ▼ スタート画面 -->
+<div id="startScreen" class="screen">
+  <!-- ロゴ -->
+  <div id="startLogo">🎮 PROGRAMMER × GAME診断</div>
+
+  <!-- BGM音量（アイコン付き） -->
+  <div id="volumeArea">
+    <span id="volumeIcon">🔊</span>
+    <input type="range" id="bgmVolume" min="0" max="1" step="0.01" value="0.5">
+  </div>
+
+  <!-- ▼ BGM ON/OFF ボタン（必須） -->
+  <button id="bgmBtn">BGM OFF</button>
+  <button id="startBtn">スタート</button>
+
+  <!-- ダークモード切り替え -->
+  <button id="darkModeBtn">🌙 ダークモード</button>
+</div>
+
+
+
+  <!-- プログレスバー -->
+  <div id="progressBarWrap" class="progress-wrap" aria-hidden="false">
+    <div id="progressBar" class="progress-bar"></div>
+  </div>
+
+  <!-- ▼ 質問画面 -->
+  <div id="questionScreen" class="screen" style="display:none;">
+    <div class="card">
+      <h2 id="questionText">質問が入ります</h2>
+      <div id="answerButtons"></div>
+      <p id="progress"></p>
+    </div>
+  </div>
+
+  <!-- ▼ 結果画面 -->
+  <div id="resultScreen" class="screen" style="display:none;">
+    <div class="card result-animate" id="resultExtras">
+
+      <!-- 結果アイコン -->
+      <div id="resultIcon"></div>
+
+      <h2>診断結果</h2>
+
+      <h3 id="gameType"></h3>
+      <h3 id="programmerType"></h3>
+      <p id="detailText"></p>
+
+      <!-- スコア内訳 -->
+      <div id="scoreBreakdown" class="score-breakdown" aria-live="polite"></div>
+
+      <!-- おすすめ言語 -->
+      <div id="recommendedLang" class="recommended-lang"></div>
+
+      <!-- 名前入力（任意） -->
+      <div id="nameInputArea">
+        <input id="playerName" type="text" placeholder="名前を入力（任意）">
+        <button id="saveNameBtn">ランキングに登録</button>
+      </div>
+
+      <!-- ランキング表示 -->
+      <div id="rankingArea" class="ranking-card"></div>
+
+      <!-- ランキングメッセージ -->
+      <p id="saveMessage" style="color:#0b6; font-weight:bold;"></p>
+
+      <!-- ランキングリセット -->
+      <button id="resetRankingBtn" class="action-btn" style="background:#c0392b;">
+        ランキングをリセット
+      </button>
+
+      <!-- アクションボタン -->
+      <button id="restartBtn" class="action-btn">もう一度診断</button>
+      <button id="shareBtn" class="action-btn">共有する（画像DL）</button>
+      <button id="copyBtn" class="action-btn">結果をコピー</button>
+
+    </div>
+  </div>
+
+  <!-- シェア用キャンバス（OGP風画像生成） -->
+  <canvas id="shareCanvas" width="800" height="400" style="display:none;"></canvas>
+
+<!-- BGM（初期はスタート画面の曲） -->
+<audio id="bgm" src="bgm/start.mp3" loop></audio>
+
+<!-- 効果音 -->
+<audio id="seClick" src="bgm/click.mp3"></audio>
+<audio id="seQuestion" src="bgm/question.mp3"></audio>
+<audio id="seResult" src="bgm/result.mp3"></audio>
+
+  <!-- 最後に script.js を読み込む -->
+  <script src="script.js"></script>
+</body>
+</html>
+
