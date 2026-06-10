@@ -1,5 +1,5 @@
 // ------------------------------
-// 画面の要素を取得
+// 画面の要素を取得（存在チェック付き）
 // ------------------------------
 var loadingScreen = document.getElementById("loadingScreen");
 var startScreen = document.getElementById("startScreen");
@@ -14,6 +14,9 @@ var gameTypeText = document.getElementById("gameType");
 var programmerTypeText = document.getElementById("programmerType");
 var detailText = document.getElementById("detailText");
 var resultIcon = document.getElementById("resultIcon");
+
+// プログレスバー（任意）
+var progressBarEl = document.querySelector(".progress-bar");
 
 // ------------------------------
 // 質問データ
@@ -39,6 +42,17 @@ var optimize = 0;
 var analysis = 0;
 
 // ------------------------------
+// BGM・効果音要素（存在チェック）
+// ------------------------------
+var bgm = document.getElementById("bgm");
+var bgmBtn = document.getElementById("bgmBtn");
+var bgmVolume = document.getElementById("bgmVolume");
+var volumeIcon = document.getElementById("volumeIcon");
+var bgmPlaying = true;
+
+var seClick = document.getElementById("seClick");
+
+// ------------------------------
 // JSON読み込み（例外処理付き）
 // ------------------------------
 fetch("questions.json")
@@ -46,11 +60,22 @@ fetch("questions.json")
     if (!res.ok) throw new Error("JSONファイルの読み込みに失敗しました");
     return res.json();
   })
-  .then(data => {
-    if (!Array.isArray(data)) throw new Error("JSON形式が不正です");
-    questions = data;
-    loadingScreen.style.display = "none";
-    startScreen.style.display = "block";
+  .then(dataJson => {
+    if (!Array.isArray(dataJson)) throw new Error("JSON形式が不正です");
+
+    // 40問固定仕様：超過分は切り捨て、足りない場合は警告
+    if (dataJson.length > 40) {
+      console.warn(`questions.json が ${dataJson.length} 問あります。先頭40問に切り詰めます。`);
+      questions = dataJson.slice(0, 40);
+    } else if (dataJson.length < 40) {
+      console.warn(`questions.json が ${dataJson.length} 問です。40問を想定したUIとスコア計算です。`);
+      questions = dataJson;
+    } else {
+      questions = dataJson;
+    }
+
+    if (loadingScreen) loadingScreen.style.display = "none";
+    if (startScreen) startScreen.style.display = "block";
   })
   .catch(err => {
     console.error("読み込みエラー:", err);
@@ -58,18 +83,22 @@ fetch("questions.json")
   });
 
 // ------------------------------
-// スタートボタン
+// スタートボタン（存在チェック）
 // ------------------------------
-document.getElementById("startBtn").addEventListener("click", function() {
-  startScreen.style.display = "none";
-  questionScreen.style.display = "block";
+if (document.getElementById("startBtn")) {
+  document.getElementById("startBtn").addEventListener("click", function() {
+    if (startScreen) startScreen.style.display = "none";
+    if (questionScreen) questionScreen.style.display = "block";
 
-  bgm.src = "bgm/question.mp3";
-  bgm.play();
-  updateVolumeIcon();
+    if (bgm) {
+      bgm.src = "bgm/question.mp3";
+      bgm.play().catch(() => {});
+    }
+    updateVolumeIcon();
 
-  showQuestion();
-});
+    showQuestion();
+  });
+}
 
 // ------------------------------
 // 質問表示（例外処理付き）
@@ -79,8 +108,8 @@ function showQuestion() {
     var q = questions[index];
     if (!q || !q.answers) throw new Error("質問データが不正です");
 
-    questionText.textContent = q.text;
-    answerButtons.innerHTML = "";
+    if (questionText) questionText.textContent = q.text;
+    if (answerButtons) answerButtons.innerHTML = "";
 
     q.answers.forEach((ans, i) => {
       var btn = document.createElement("button");
@@ -89,10 +118,19 @@ function showQuestion() {
       answerButtons.appendChild(btn);
     });
 
-progress.textContent = (index + 1) + " / " + questions.length;
+    // 表示は 40問固定で見せる（questions.length が 40 未満でも動く）
+    var total = questions.length;
+    if (total > 40) total = 40;
+    if (progress) progress.textContent = (index + 1) + " / " + total;
 
-// ▼ スマホで画面がズレないように固定
-window.scrollTo(0, 0);
+    // プログレスバーがあれば幅を更新
+    if (progressBarEl) {
+      var pct = Math.round(((index + 1) / (questions.length || 1)) * 100);
+      progressBarEl.style.width = pct + "%";
+    }
+
+    // ▼ スマホで画面がズレないように固定
+    window.scrollTo(0, 0);
 
   } catch (err) {
     console.error("質問表示エラー:", err);
@@ -117,16 +155,16 @@ function selectAnswer(i) {
     if (a.data > 0) currentType = "data";
     if (a.infra > 0) currentType = "infra";
 
-    front += a.front;
-    backend += a.backend;
-    data += a.data;
-    infra += a.infra;
+    front += Number(a.front) || 0;
+    backend += Number(a.backend) || 0;
+    data += Number(a.data) || 0;
+    infra += Number(a.infra) || 0;
 
-    if (a.reflex) reflex += a.reflex;
-    if (a.strategy) strategy += a.strategy;
-    if (a.explore) explore += a.explore;
-    if (a.optimize) optimize += a.optimize;
-    if (a.analysis) analysis += a.analysis;
+    if (a.reflex) reflex += Number(a.reflex) || 0;
+    if (a.strategy) strategy += Number(a.strategy) || 0;
+    if (a.explore) explore += Number(a.explore) || 0;
+    if (a.optimize) optimize += Number(a.optimize) || 0;
+    if (a.analysis) analysis += Number(a.analysis) || 0;
 
     const randomBonus = Math.floor(Math.random() * 3);
     front += randomBonus;
@@ -189,6 +227,7 @@ function judgeProgrammerType(scores) {
   if (maxScore === backend) return "バックエンドエンジニア";
   if (maxScore === data) return "データエンジニア / データ分析";
   if (maxScore === infra) return "インフラ / DevOps エンジニア";
+  return "未分類";
 }
 
 function judgeResult(scores) {
@@ -199,18 +238,23 @@ function judgeResult(scores) {
   if (maxScore === backend) return "戦略・ロジックタイプ";
   if (maxScore === data) return "分析・探索タイプ";
   if (maxScore === infra) return "最適化・安定性タイプ";
+  return "バランス型";
 }
 
 // ------------------------------
 // 結果表示（1000点換算）
 // ------------------------------
 function showResult() {
-  bgm.src = "bgm/result.mp3";
-  bgm.play();
+  if (bgm) {
+    bgm.src = "bgm/result.mp3";
+    bgm.play().catch(() => {});
+  }
   updateVolumeIcon();
 
   const scores = { front, backend, data, infra };
   const rawScore = front + backend + data + infra;
+
+  // 40問前提の換算（questions.json を 40問に揃えているため）
   const totalScore = Math.min(1000, Math.round((rawScore / 80) * 1000));
 
   const gameType = judgeResult(scores);
@@ -219,14 +263,14 @@ function showResult() {
   const gameDetail = getDetailText(gameType);
   const programmerDetail = getProgrammerDetail(programmerType);
 
-  questionScreen.style.display = "none";
-  resultScreen.style.display = "block";
+  if (questionScreen) questionScreen.style.display = "none";
+  if (resultScreen) resultScreen.style.display = "block";
 
-  gameTypeText.textContent = `ゲームタイプ：${gameType}`;
-  programmerTypeText.textContent = `プログラマー適性：${programmerType}`;
-  detailText.textContent = `${gameDetail}\n\n${programmerDetail}`;
+  if (gameTypeText) gameTypeText.textContent = `ゲームタイプ：${gameType}`;
+  if (programmerTypeText) programmerTypeText.textContent = `プログラマー適性：${programmerType}`;
+  if (detailText) detailText.textContent = `${gameDetail}\n\n${programmerDetail}`;
 
-  resultIcon.textContent = getResultIcon(programmerType);
+  if (resultIcon) resultIcon.textContent = getResultIcon(programmerType);
 
   showScoreBreakdown(scores);
   showRecommendedLanguages(programmerType);
@@ -240,6 +284,7 @@ function showResult() {
 // ------------------------------
 function showScoreBreakdown(scores) {
   var el = document.getElementById("scoreBreakdown");
+  if (!el) return;
   el.innerHTML = `
     <strong>スコア内訳</strong>
     <div>フロント: ${scores.front}</div>
@@ -264,6 +309,7 @@ function getRecommendedLanguages(type) {
 
 function showRecommendedLanguages(type) {
   var el = document.getElementById("recommendedLang");
+  if (!el) return;
   el.innerHTML = `<strong>おすすめ言語:</strong> ${getRecommendedLanguages(type).join(" / ")}`;
 }
 
@@ -272,7 +318,7 @@ function showRecommendedLanguages(type) {
 // ------------------------------
 function saveRanking(score, type) {
   let ranking = JSON.parse(localStorage.getItem("ranking")) || [];
-  const name = document.getElementById("playerName").value || "ゲスト";
+  const name = document.getElementById("playerName") ? document.getElementById("playerName").value || "ゲスト" : "ゲスト";
 
   ranking.push({
     name: name,
@@ -292,6 +338,7 @@ function saveRanking(score, type) {
 // ------------------------------
 function showRanking() {
   const rankingArea = document.getElementById("rankingArea");
+  if (!rankingArea) return;
   let ranking = JSON.parse(localStorage.getItem("ranking")) || [];
 
   if (ranking.length === 0) {
@@ -320,44 +367,52 @@ function showRanking() {
 // ------------------------------
 document.addEventListener("DOMContentLoaded", function() {
   const savedName = localStorage.getItem("playerName");
-  if (savedName) document.getElementById("playerName").value = savedName;
+  if (savedName && document.getElementById("playerName")) document.getElementById("playerName").value = savedName;
 });
 
 // ------------------------------
-// ランキング登録
+// ランキング登録（存在チェック）
 // ------------------------------
-document.getElementById("saveNameBtn").addEventListener("click", function () {
-  const name = document.getElementById("playerName").value || "ゲスト";
-  localStorage.setItem("playerName", name);
+if (document.getElementById("saveNameBtn")) {
+  document.getElementById("saveNameBtn").addEventListener("click", function () {
+    const name = document.getElementById("playerName") ? document.getElementById("playerName").value || "ゲスト" : "ゲスト";
+    localStorage.setItem("playerName", name);
 
-  const rawScore = front + backend + data + infra;
-  const totalScore = Math.min(1000, Math.round((rawScore / 80) * 1000));
-  const programmerType = judgeProgrammerType({ front, backend, data, infra });
+    const rawScore = front + backend + data + infra;
+    const totalScore = Math.min(1000, Math.round((rawScore / 80) * 1000));
+    const programmerType = judgeProgrammerType({ front, backend, data, infra });
 
-  saveRanking(totalScore, programmerType);
-  showRanking();
-
-  const msg = document.getElementById("saveMessage");
-  msg.textContent = "ランキングに登録しました！";
-  setTimeout(() => msg.textContent = "", 3000);
-});
-
-// ------------------------------
-// ランキングリセット
-// ------------------------------
-document.getElementById("resetRankingBtn").addEventListener("click", function () {
-  if (confirm("ランキングをリセットしますか？")) {
-    localStorage.removeItem("ranking");
+    saveRanking(totalScore, programmerType);
     showRanking();
-  }
-});
+
+    const msg = document.getElementById("saveMessage");
+    if (msg) {
+      msg.textContent = "ランキングに登録しました！";
+      setTimeout(() => msg.textContent = "", 3000);
+    }
+  });
+}
 
 // ------------------------------
-// ダークモード
+// ランキングリセット（存在チェック）
 // ------------------------------
-document.getElementById("darkModeBtn").addEventListener("click", () => {
-  document.documentElement.classList.toggle("dark");
-});
+if (document.getElementById("resetRankingBtn")) {
+  document.getElementById("resetRankingBtn").addEventListener("click", function () {
+    if (confirm("ランキングをリセットしますか？")) {
+      localStorage.removeItem("ranking");
+      showRanking();
+    }
+  });
+}
+
+// ------------------------------
+// ダークモード（存在チェック）
+// ------------------------------
+if (document.getElementById("darkModeBtn")) {
+  document.getElementById("darkModeBtn").addEventListener("click", () => {
+    document.documentElement.classList.toggle("dark");
+  });
+}
 
 // ------------------------------
 // 波紋エフェクト
@@ -371,10 +426,11 @@ document.addEventListener("click", function(e) {
 });
 
 // ------------------------------
-// 共有画像生成
+// 共有画像生成（存在チェック）
 // ------------------------------
 function generateShareImage(text) {
   const canvas = document.getElementById("shareCanvas");
+  if (!canvas) return "";
   const ctx = canvas.getContext("2d");
 
   ctx.fillStyle = "#1a1a1a";
@@ -390,54 +446,49 @@ function generateShareImage(text) {
   return canvas.toDataURL("image/png");
 }
 
-document.getElementById("shareBtn").addEventListener("click", () => {
-  const text = `${gameTypeText.textContent}\n${programmerTypeText.textContent}`;
-  const img = generateShareImage(text);
-
-  const a = document.createElement("a");
-  a.href = img;
-  a.download = "result.png";
-  a.click();
-});
+if (document.getElementById("shareBtn")) {
+  document.getElementById("shareBtn").addEventListener("click", () => {
+    const text = `${gameTypeText ? gameTypeText.textContent : ""}\n${programmerTypeText ? programmerTypeText.textContent : ""}`;
+    const img = generateShareImage(text);
+    if (!img) return;
+    const a = document.createElement("a");
+    a.href = img;
+    a.download = "result.png";
+    a.click();
+  });
+}
 
 // ------------------------------
-// BGM・効果音
+// BGM・効果音（存在チェック・値のパース）
 // ------------------------------
-var bgm = document.getElementById("bgm");
-var bgmBtn = document.getElementById("bgmBtn");
-var bgmVolume = document.getElementById("bgmVolume");
-var volumeIcon = document.getElementById("volumeIcon");
-var bgmPlaying = true;
+if (bgm && bgmVolume) {
+  // 初期音量を数値で扱う
+  bgm.volume = parseFloat(bgmVolume.value) || 0.5;
+  updateVolumeIcon();
+}
 
-var seClick = document.getElementById("seClick");
-
-// ▼ 最初の画面でクリックされた瞬間にBGMを許可＆再生
 document.addEventListener("click", function initBGM() {
+  if (!bgm) return;
+  if (bgmVolume) bgm.volume = parseFloat(bgmVolume.value) || 0.5;
   bgm.src = "bgm/start.mp3";
-  bgm.volume = bgmVolume.value;
-
   bgm.play().then(() => {
     bgmPlaying = true;
     updateVolumeIcon();
-  });
-
+  }).catch(() => {});
   document.removeEventListener("click", initBGM);
 });
 
-setTimeout(() => {
-  bgm.volume = bgmVolume.value;
-  updateVolumeIcon();
-}, 300);
+if (bgmVolume) {
+  bgmVolume.addEventListener("input", () => {
+    if (!bgm) return;
+    bgm.volume = parseFloat(bgmVolume.value) || 0;
+    updateVolumeIcon();
+  });
+}
 
-// ▼ 音量スライダー
-bgmVolume.addEventListener("input", () => {
-  bgm.volume = bgmVolume.value;
-  updateVolumeIcon();
-});
-
-// ▼ 音量アイコン更新
 function updateVolumeIcon() {
-  const v = bgm.volume;
+  if (!volumeIcon) return;
+  const v = bgm ? bgm.volume : 0;
 
   if (!bgmPlaying || v == 0) {
     volumeIcon.textContent = "🔇";
@@ -454,23 +505,26 @@ function updateVolumeIcon() {
   volumeIcon.classList.add("volume-animate");
 }
 
-// ▼ フェードイン
+// フェードイン
 function fadeInBGM() {
+  if (!bgm || !bgmVolume) return;
   bgm.volume = 0;
-  bgm.play();
+  bgm.play().catch(() => {});
   let v = 0;
+  const target = parseFloat(bgmVolume.value) || 0.5;
   const fade = setInterval(() => {
     v += 0.02;
-    if (v >= bgmVolume.value) {
-      v = bgmVolume.value;
+    if (v >= target) {
+      v = target;
       clearInterval(fade);
     }
     bgm.volume = v;
   }, 40);
 }
 
-// ▼ フェードアウト
+// フェードアウト
 function fadeOutBGM() {
+  if (!bgm) return;
   let v = bgm.volume;
   const fade = setInterval(() => {
     v -= 0.02;
@@ -483,38 +537,91 @@ function fadeOutBGM() {
   }, 40);
 }
 
-// ▼ BGM ON/OFF
-bgmBtn.addEventListener("click", () => {
-  if (bgmPlaying) {
-    fadeOutBGM();
-    bgmBtn.textContent = "BGM ON";
-  } else {
-    fadeInBGM();
-    bgmBtn.textContent = "BGM OFF";
-  }
-  bgmPlaying = !bgmPlaying;
-  updateVolumeIcon();
-});
+// BGM ON/OFF（存在チェック）
+if (bgmBtn) {
+  bgmBtn.addEventListener("click", () => {
+    if (!bgm) return;
+    if (bgmPlaying) {
+      fadeOutBGM();
+      bgmBtn.textContent = "BGM ON";
+    } else {
+      fadeInBGM();
+      bgmBtn.textContent = "BGM OFF";
+    }
+    bgmPlaying = !bgmPlaying;
+    updateVolumeIcon();
+  });
+}
 
-// ▼ 効果音
+// 効果音
 function playClick() {
-  seClick.currentTime = 0;
-  seClick.play();
+  if (!seClick) return;
+  try {
+    seClick.currentTime = 0;
+    seClick.play();
+  } catch (e) {}
 }
 
 // ------------------------------
-// もう一度診断
+// もう一度診断（存在チェック）
 // ------------------------------
-document.getElementById("restartBtn").addEventListener("click", () => {
-  playClick();
-  location.reload();
-});
+if (document.getElementById("restartBtn")) {
+  document.getElementById("restartBtn").addEventListener("click", () => {
+    playClick();
+    location.reload();
+  });
+}
 
 // ------------------------------
-// 結果コピー
+// 結果コピー（存在チェック）
 // ------------------------------
-document.getElementById("copyBtn").addEventListener("click", () => {
-  playClick();
-  const text = `${gameTypeText.textContent}\n${programmerTypeText.textContent}\n${detailText.textContent}`;
-  navigator.clipboard.writeText(text);
-});
+if (document.getElementById("copyBtn")) {
+  document.getElementById("copyBtn").addEventListener("click", () => {
+    playClick();
+    const text = `${gameTypeText ? gameTypeText.textContent : ""}\n${programmerTypeText ? programmerTypeText.textContent : ""}\n${detailText ? detailText.textContent : ""}`;
+    navigator.clipboard.writeText(text).catch(() => {});
+  });
+}
+
+// ------------------------------
+// 補助関数：結果詳細・プログラマー詳細・アイコン
+// ------------------------------
+function getDetailText(type) {
+  switch (type) {
+    case "反射・直感タイプ":
+      return "瞬時の判断が得意で、アクションゲームや高速処理に向いています。";
+    case "戦略・ロジックタイプ":
+      return "状況分析と計画立案が得意で、RPGやシミュレーションに強いタイプです。";
+    case "分析・探索タイプ":
+      return "情報収集やデータ分析が得意で、探索・収集系ゲームに向いています。";
+    case "最適化・安定性タイプ":
+      return "効率化や安定性を重視するタイプで、クラフト・管理系ゲームに向いています。";
+    default:
+      return "あなたのゲームスタイルに合わせた特徴が見つかりました！";
+  }
+}
+
+function getProgrammerDetail(type) {
+  switch (type) {
+    case "フロントエンドエンジニア":
+      return "UIやUXに強く、ユーザー体験を重視する開発が得意です。HTML/CSS/JSを活かせます。";
+    case "バックエンドエンジニア":
+      return "サーバーサイドやAPI設計が得意で、スケーラビリティやロジック設計に強みがあります。";
+    case "データエンジニア / データ分析":
+      return "データ処理や分析、可視化が得意で、PythonやSQLを活かした仕事が向いています。";
+    case "インフラ / DevOps エンジニア":
+      return "システムの安定運用や自動化、インフラ設計に強く、運用改善が得意です。";
+    default:
+      return "幅広い領域で活躍できるポテンシャルがあります。興味のある分野を深掘りしてみましょう。";
+  }
+}
+
+function getResultIcon(programmerType) {
+  switch (programmerType) {
+    case "フロントエンドエンジニア": return "🎨";
+    case "バックエンドエンジニア": return "🛠️";
+    case "データエンジニア / データ分析": return "📊";
+    case "インフラ / DevOps エンジニア": return "⚙️";
+    default: return "✨";
+  }
+}
