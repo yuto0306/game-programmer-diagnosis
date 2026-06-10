@@ -168,7 +168,7 @@
       { "text": "環境音を最適化", "front": 0, "backend": 0, "data": 0, "infra": 2, "optimize": 1 }
     ]
   },
-
+  
   {
     "text": "ゲームのチュートリアルは？",
     "answers": [
@@ -190,6 +190,206 @@
   },
 
   {
+    "text": "ゲームのセーブ頻度は？",
+    "answers": [
+      { "text": "ほぼしない", "front": 2, "backend": 0, "data": 0, "infra": 0, "reflex": 1 },
+      { "text": "区切りで保存", "front": 0, "backend": 2, "data": 0, "infra": 0, "strategy": 1 },
+      { "text": "こまめに保存", "front": 0, "backend": 0, "data": 2, "infra": 0, "analysis": 1 },
+      { "text": "自動保存設定を確認", "front": 0, "backend": 0, "data": 0, "infra": 2, "optimize": 1 }
+    ]
+  },
+
+  {
+    "text": "ゲームの移動操作は？",
+    "answers": [
+      { "text": "感覚で動く", "front": 2, "backend": 0, "data": 0, "infra": 0, "reflex": 1 },
+      { "text": "最短ルートを考える", "front": 0, "backend": 2, "data": 0, "infra": 0, "strategy": 1 },
+      { "text": "マップを見ながら動く", "front": 0, "backend": 0, "data": 2, "infra": 0, "explore": 1 },
+      { "text": "安全な道を選ぶ", "front": 0, "backend": 0, "data": 0, "infra": 2, "optimize": 1 }
+    ]
+  },
+
+  {
+    "text": "ゲームの装備更新は？",
+    "answers": [
+      { "text": "新しいのをすぐ使う", "front": 2, "backend": 0, "data": 0, "infra": 0, "reflex": 1 },
+      { "text": "性能を比較して選ぶ", "front": 0, "backend": 2, "data": 0, "infra": 0, "analysis": 1 },
+      { "text": "素材を集めて強化", "front": 0, "backend": 0, "data": 2, "infra": 0, "explore": 1 },
+      { "text": "最適な組み合わせを探す", "front": 0, "backend": 0, "data": 0, "infra": 2, "optimize": 1 }
+    ]
+  },
+
+  {
+    "text": "ゲームの戦闘スタイルは？",
+    "answers": [
+      { "text": "スピード重視", "front": 2, "backend": 0, "data": 0, "infra": 0, "reflex": 1 },
+      { "text": "戦略重視", "front": 0, "backend": 2, "data": 0, "infra": 0, "strategy": 1 },
+      { "text": "情報収集して挑む", "front": 0, "backend": 0, "data": 2, "infra": 0, "analysis": 1 },
+      { "text": "安定構成で挑む", "front": 0, "backend": 0, "data": 0, "infra": 2, "optimize": 1 }
+    ]
+  },
+
+  {
+    "text": "ゲームのミッションは？",
+    "answers": [
+      { "text": "勢いで進める", "front": 2, "backend": 0, "data": 0, "infra": 0, "reflex": 1 },
+      { "text": "順番にこなす", "front": 0, "backend": 2, "data": 0, "infra": 0, "strategy": 1 },
+      { "text": "報酬を見て選ぶ", "front": 0, "backend": 0, "data": 2, "infra": 0, "analysis": 1 },
+      { "text": "効率の良い順に進める", "front": 0, "backend": 0, "data": 0, "infra": 2, "optimize": 1 }
+    ]
+  },
+
+  {
+    "text": "ゲームのクラフト要素は？",
+    "answers": [
+      { "text": "あまり使わない", "front": 2, "backend": 0, "data": 0, "infra": 0, "reflex": 1 },
+      { "text": "必要な時だけ使う", "front": 0, "backend": 2, "data": 0, "infra": 0, "strategy": 1 },
+      { "text": "素材を集めて楽しむ", "front": 0, "backend": 0, "data": 2, "infra": 0, "explore": 1 },
+      { "text": "効率化して量産する", "front": 0, "backend": 0, "data": 0, "infra": 2, "optimize": 1 }
+    ]
+  },
+
+  {
+    "text": "ゲームの敵AIについてどう思う？",
+    "answers": [
+      { "text": "反応速度が大事", "front": 2, "backend": 0, "data": 0, "infra": 0, "reflex": 1 },
+      { "text": "行動パターンが大事", "front": 0, "backend": 2, "data": 0, "infra": 0, "strategy": 1 },
+      { "text": "データ量が大事", "front": 0, "backend": 0, "data": 2, "infra": 0, "analysis": 1 },
+      { "text": "処理の軽さが大事", "front": 0, "backend": 0, "data": 0, "infra": 2, "optimize": 1 }
+    ]
+  },
+
+  {
+    "text": "ゲームのバグを見つけたら？",
+    "answers": [
+      { "text": "気にせず進む", "front": 2, "backend": 0, "data": 0, "infra": 0, "reflex": 1 },
+      { "text": "再現性を調べる", "front": 0, "backend": 2, "data": 0, "infra": 0, "analysis": 1 },
+      { "text": "原因を考える", "front": 0, "backend": 0, "data": 2, "infra": 0, "analysis": 1 },
+      { "text": "設定や環境を疑う", "front": 0, "backend": 0, "data": 0, "infra": 2, "optimize": 1 }
+    ]
+  },
+
+  {
+    "text": "ゲームのキャラ育成は？",
+    "answers": [
+      { "text": "直感で育てる", "front": 2, "backend": 0, "data": 0, "infra": 0, "reflex": 1 },
+      { "text": "役割を決めて育てる", "front": 0, "backend": 2, "data": 0, "infra": 0, "strategy": 1 },
+      { "text": "ステータスを見て育てる", "front": 0, "backend": 0, "data": 2, "infra": 0, "analysis": 1 },
+      { "text": "効率の良い育成ルートを探す", "front": 0, "backend": 0, "data": 0, "infra": 2, "optimize": 1 }
+    ]
+  },
+
+  {
+    "text": "ゲームのストーリーは？",
+    "answers": [
+      { "text": "雰囲気で楽しむ", "front": 2, "backend": 0, "data": 0, "infra": 0, "explore": 1 },
+      { "text": "伏線を考察する", "front": 0, "backend": 2, "data": 0, "infra": 0, "analysis": 1 },
+      { "text": "世界観を調べる", "front": 0, "backend": 0, "data": 2, "infra": 0, "explore": 1 },
+      { "text": "設定資料を読む", "front": 0, "backend": 0, "data": 0, "infra": 2, "analysis": 1 }
+    ]
+  },
+
+  {
+    "text": "ゲームのやり残しは？",
+    "answers": [
+      { "text": "気にしない", "front": 2, "backend": 0, "data": 0, "infra": 0, "reflex": 1 },
+      { "text": "必要なものだけ回収", "front": 0, "backend": 2, "data": 0, "infra": 0, "strategy": 1 },
+      { "text": "全部回収したい", "front": 0, "backend": 0, "data": 2, "infra": 0, "explore": 1 },
+      { "text": "効率よく回収したい", "front": 0, "backend": 0, "data": 0, "infra": 2, "optimize": 1 }
+    ]
+  },
+
+  {
+    "text": "ゲームのUIテーマは？",
+    "answers": [
+      { "text": "明るくて直感的", "front": 2, "backend": 0, "data": 0, "infra": 0, "reflex": 1 },
+      { "text": "整理されて見やすい", "front": 0, "backend": 2, "data": 0, "infra": 0, "strategy": 1 },
+      { "text": "情報量が多い方が良い", "front": 0, "backend": 0, "data": 2, "infra": 0, "analysis": 1 },
+      { "text": "軽くてシンプルが良い", "front": 0, "backend": 0, "data": 0, "infra": 2, "optimize": 1 }
+    ]
+  },
+
+  {
+    "text": "ゲームの敵の行動予測は？",
+    "answers": [
+      { "text": "反射で対応する", "front": 2, "backend": 0, "data": 0, "infra": 0, "reflex": 1 },
+      { "text": "パターンを読む", "front": 0, "backend": 2, "data": 0, "infra": 0, "strategy": 1 },
+      { "text": "データ的に分析する", "front": 0, "backend": 0, "data": 2, "infra": 0, "analysis": 1 },
+      { "text": "環境要因を考える", "front": 0, "backend": 0, "data": 0, "infra": 2, "optimize": 1 }
+    ]
+  },
+
+  {
+    "text": "ゲームのステージギミックは？",
+    "answers": [
+      { "text": "反射で突破する", "front": 2, "backend": 0, "data": 0, "infra": 0, "reflex": 1 },
+      { "text": "仕組みを理解して突破", "front": 0, "backend": 2, "data": 0, "infra": 0, "strategy": 1 },
+      { "text": "ギミックの法則を調べる", "front": 0, "backend": 0, "data": 2, "infra": 0, "analysis": 1 },
+      { "text": "安全策を取りながら進む", "front": 0, "backend": 0, "data": 0, "infra": 2, "optimize": 1 }
+    ]
+  },
+
+  {
+    "text": "ゲームのアイテム管理は？",
+    "answers": [
+      { "text": "気にせず使う", "front": 2, "backend": 0, "data": 0, "infra": 0, "reflex": 1 },
+      { "text": "必要な時だけ使う", "front": 0, "backend": 2, "data": 0, "infra": 0, "strategy": 1 },
+      { "text": "効率的に使うタイミングを考える", "front": 0, "backend": 0, "data": 2, "infra": 0, "analysis": 1 },
+      { "text": "節約して最適化する", "front": 0, "backend": 0, "data": 0, "infra": 2, "optimize": 1 }
+    ]
+  },
+
+  {
+    "text": "ゲームの敵の強さが急に上がったら？",
+    "answers": [
+      { "text": "気合で突破", "front": 2, "backend": 0, "data": 0, "infra": 0, "reflex": 1 },
+      { "text": "戦略を変える", "front": 0, "backend": 2, "data": 0, "infra": 0, "strategy": 1 },
+      { "text": "弱点を調べる", "front": 0, "backend": 0, "data": 2, "infra": 0, "analysis": 1 },
+      { "text": "装備や設定を見直す", "front": 0, "backend": 0, "data": 0, "infra": 2, "optimize": 1 }
+    ]
+  },
+
+  {
+    "text": "ゲームのマルチプレイは？",
+    "answers": [
+      { "text": "勢いで参加", "front": 2, "backend": 0, "data": 0, "infra": 0, "reflex": 1 },
+      { "text": "役割を決めて動く", "front": 0, "backend": 2, "data": 0, "infra": 0, "strategy": 1 },
+      { "text": "味方の情報を見て動く", "front": 0, "backend": 0, "data": 2, "infra": 0, "analysis": 1 },
+      { "text": "環境設定を整えてから参加", "front": 0, "backend": 0, "data": 0, "infra": 2, "optimize": 1 }
+    ]
+  },
+
+   {
+    "text": "ゲームのスキルツリーは？",
+    "answers": [
+      { "text": "直感で選ぶ", "front": 2, "backend": 0, "data": 0, "infra": 0, "reflex": 1 },
+      { "text": "役割を決めて選ぶ", "front": 0, "backend": 2, "data": 0, "infra": 0, "strategy": 1 },
+      { "text": "効果を比較して選ぶ", "front": 0, "backend": 0, "data": 2, "infra": 0, "analysis": 1 },
+      { "text": "効率の良いルートを選ぶ", "front": 0, "backend": 0, "data": 0, "infra": 2, "optimize": 1 }
+    ]
+  },
+
+  {
+    "text": "ゲームの敵の出現パターンは？",
+    "answers": [
+      { "text": "反射で対応", "front": 2, "backend": 0, "data": 0, "infra": 0, "reflex": 1 },
+      { "text": "パターンを読む", "front": 0, "backend": 2, "data": 0, "infra": 0, "strategy": 1 },
+      { "text": "データ的に分析", "front": 0, "backend": 0, "data": 2, "infra": 0, "analysis": 1 },
+      { "text": "負荷の少ない動きを探す", "front": 0, "backend": 0, "data": 0, "infra": 2, "optimize": 1 }
+    ]
+  },
+
+  {
+    "text": "ゲームの環境設定は？",
+    "answers": [
+      { "text": "デフォルトでOK", "front": 2, "backend": 0, "data": 0, "infra": 0, "reflex": 1 },
+      { "text": "必要な部分だけ調整", "front": 0, "backend": 2, "data": 0, "infra": 0, "strategy": 1 },
+      { "text": "細かく調整する", "front": 0, "backend": 0, "data": 2, "infra": 0, "analysis": 1 },
+      { "text": "軽さ重視で最適化", "front": 0, "backend": 0, "data": 0, "infra": 2, "optimize": 1 }
+    ]
+  },
+
+  {
     "text": "ゲームのプレイスタイルは？",
     "answers": [
       { "text": "勢いで楽しむ", "front": 2, "backend": 0, "data": 0, "infra": 0, "reflex": 1 },
@@ -199,4 +399,3 @@
     ]
   }
 ]
-
